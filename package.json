@@ -1,0 +1,15 @@
+{
+  "name": "json-object-diff",
+  "version": "1.0.0",
+  "description": "",
+  "main": "jsodiff.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dominique Hazael-Massieux <dom@w3.org> (http://www.w3.org/People/Dom/)",
+  "license": "MIT",
+  "dependencies": {
+    "node-jq": "^1.11.1",
+    "yargs": "^15.3.1"
+  }
+}
