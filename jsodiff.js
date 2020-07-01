@@ -79,8 +79,8 @@ async function cli() {
         .describe('p', 'jq-path of the object to be compared in the global JSON file')
         .alias('k', 'key')
         .describe('k', 'name of the key to use as index for an array of objects')
-        .alias('i', 'ignore-key')
-        .describe('i', 'ignore diffs when they occur in the given subkey')
+        .alias('i', 'ignore-field')
+        .describe('i', 'ignore diffs when they occur in the given field of the objects being compared')
   //.array('i')
         .command(['diff <base> <new>', '$0'], 'Runs a JSON Object diff between files <base> and <new>', yargs => {
           yargs.positional('base', {

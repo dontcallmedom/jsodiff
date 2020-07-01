@@ -67,3 +67,95 @@ will output
   },
 + "user3": {…},
 ```
+
+## Command line options
+```
+jsodiff.js <base> <new>
+
+Positionals:
+  base  base file of the comparison                          [string] [required]
+  new   target file of the comparison                        [string] [required]
+
+Options:
+  --help            Show help                                          [boolean]
+  --version         Show version number                                [boolean]
+  -p, --path        jq-path of the object to be compared in the global JSON file
+  -k, --key         name of the key to use as index for an array of objects
+  -i, --ignore-field  ignore diffs when they occur in the given field of the objects being compared
+```
+
+## Advanced examples
+
+### --ignore-field
+The `--ignore-field` option allows to indicate one (or more by repeating the option) set of fields in the list of objects that should be ignored when comparing one list with another.
+
+list1.json:
+```json
+[
+ {"id": "user1", "name": "Alice", "age": 42},
+ {"id": "user2", "name": "Bob", "age": 12}
+]
+```
+
+list2.json:
+```json
+[
+ {"id": "user1", "name": "Alice", "age": 42},
+ {"id": "user2", "name": "Eve", "age": 16}
+]
+```
+```sh
+node jsodiff.js -k id -i age list1.json list2.sjon
+```
+will output
+```
+will output
+```diff
+  {"id": "user2",
+-  "name": "Bob",
++  "name": "Eve",
+  },
+```
+(ignoring that the `age` field is different in the two `user2` records)
+
+
+### --path
+
+The `--path` option allows to only compare a subtree of a JSON file by specifying the path using the syntax of [jq](https://stedolan.github.io/jq/manual/).
+
+list1.json:
+```json
+{
+ "title": "My data file",
+ "data": {
+  "users": [
+    {"id": "user1", "name": "Alice", "age": 42},
+    {"id": "user2", "name": "Bob", "age": 12}
+   ]
+  }
+}
+```
+
+list2.json:
+```json
+{
+ "title": "My data file",
+ "data": {
+  "users": [
+    {"id": "user1", "name": "Alice", "age": 42},
+    {"id": "user2", "name": "Eve", "age": 12}
+   ]
+  }
+}
+```
+```sh
+node jsodiff.js -k id -p ".data.users" list1.json list2.sjon
+```
+will output
+```diff
+  {"id": "user2",
+-  "name": "Bob",
++  "name": "Eve",
+  },
+```
+(looking only at the array of objects in the "users" field of the "data" field of the top-level object)
