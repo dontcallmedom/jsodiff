@@ -44,7 +44,7 @@ function jsodiff(oldentries, newentries, key, isHash, ignoreKeys = []) {
     let newentry = newentries.find(d => d[key] === dfn[key]);
     if (!newentry) {
       if (isHash) {
-        results.push('- ' + dfn[key] + ': {…},');
+        results.push('- "' + dfn[key] + '": {…},');
       } else {
         results.push('- {"' + key + '": "' + dfn[key] + '"…},');
       }
@@ -62,7 +62,7 @@ function jsodiff(oldentries, newentries, key, isHash, ignoreKeys = []) {
     let oldentry = oldentries.find(d => d[key] === dfn[key]);
     if (!oldentry) {
       if (isHash) {
-        results.push('+ ' + dfn[key] + ': {…},');
+        results.push('+ "' + dfn[key] + '": {…},');
       } else {
         results.push('+ {"' + key + '": "' + dfn[key] + '"…},');
       }
@@ -104,12 +104,13 @@ async function cli() {
   let oldentries = old;
   let newentries = _new;
   let key = argv.key;
-  let isHash = false;
-  if (!key) {
+  let isHash = !Array.isArray(oldentries);
+  if (isHash) {
     key = "___key";
-    isHash = true;
     oldentries = Object.keys(old).map(k => Object.assign({}, old[k], {___key: k}));
     newentries = Object.keys(_new).map(k => Object.assign({}, _new[k], {___key: k})).sort((a,b) => a[key].localeCompare(b[key]));
+  } else if (!key) {
+    key = "id";
   }
   oldentries = oldentries.sort((a,b) => a[key].localeCompare(b[key]));
   newentries = newentries.sort((a,b) => a[key].localeCompare(b[key]));
