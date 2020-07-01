@@ -34,6 +34,7 @@ const arrayify = a => Array.isArray(a) ? a : (a !== undefined ? [a] : []);
 
   let prevDiff = false;
   let lastMatch;
+  const additions = [];
 
   function diffEntries(oldentry, newentry, {isHash: isHash, key: key, ignoreKeys: ignoreKeys} = {isHash: false, key: '', ignoreKeys: []}) {
     // we assume keys are the same
@@ -92,7 +93,8 @@ const arrayify = a => Array.isArray(a) ? a : (a !== undefined ? [a] : []);
     // This assume the lists are ordered
     // addition
     let i = lastMatch ? newentries.findIndex(d => d[key] === lastMatch) + 1 : 0;
-    while (lastMatch && i < newentries.length && dfn[key] !== newentries[i][key] ) {
+    while (lastMatch && i < newentries.length && dfn[key] !== newentries[i][key] && !additions.includes(key) ) { // FIXME: this doesn't work
+      additions.push(key)
       if (isHash) {
         let copy = {...newentries[i]};
         delete copy.___key;
