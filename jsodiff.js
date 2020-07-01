@@ -73,7 +73,7 @@ const arrayify = a => Array.isArray(a) ? a : (a !== undefined ? [a] : []);
     key = "___key";
     isHash = true;
     oldentries = Object.keys(old).map(k => Object.assign({}, old[k], {___key: k}));
-    oldentries = Object.keys(_new).map(k => Object.assign({}, _new[k], {___key: k}));
+    newentries = Object.keys(_new).map(k => Object.assign({}, _new[k], {___key: k})).sort((a,b) => a[key].localeCompare(b[key]));
   }
 
   oldentries.forEach((dfn, index) => {
