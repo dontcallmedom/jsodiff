@@ -55,7 +55,7 @@ hash2.json:
 }
 ```
 ```sh
-node jsodiff.js list1.json list2.sjon
+node jsodiff.js hash1.json hash2.sjon
 ```
 will output
 ```diff
