@@ -38,7 +38,6 @@ function jsodiff(oldentries, newentries, key, isHash, ignoreKeys = []) {
   const results = [];
 
   let prevDiff = false;
-  let lastMatch;
   const additions = [];
 
   oldentries.forEach((dfn, index) => {
@@ -49,23 +48,7 @@ function jsodiff(oldentries, newentries, key, isHash, ignoreKeys = []) {
       } else {
         results.push('- {"' + key + '": "' + dfn[key] + '"…},');
       }
-      prevDiff = true;
       return;
-    }
-    // This assume the lists are ordered
-    // addition
-    let i = lastMatch ? newentries.findIndex(d => d[key] === lastMatch) + 1 : 0;
-    while (lastMatch && i < newentries.length && dfn[key] !== newentries[i][key] && !additions.includes(key) ) { // FIXME: this doesn't work
-      additions.push(key)
-      if (isHash) {
-        let copy = {...newentries[i]};
-        delete copy.___key;
-        results.push('+ "'  + newentries[i].___key + '": ' + JSON.stringify(clean));
-      } else {
-        results.push('+ ' + JSON.stringify(newentries[i]));
-      }
-      i++;
-      prevDiff = true;
     }
     let diffentry = diffEntries(dfn, newentry, {ignoreKeys, key, isHash});
     if (diffentry) { // change
@@ -73,10 +56,18 @@ function jsodiff(oldentries, newentries, key, isHash, ignoreKeys = []) {
       prevDiff = true;
     } else if (prevDiff) { // punctuate removal
       results.push('  {"id": "' + dfn[key] + '"…},');
-      results.push('@@ -' + index + ' ' + newentries.findIndex(d => d[key] === dfn[key])  + ' @@');
-      prevDiff = false;
     }
-    lastMatch = dfn[key];
+  });
+  newentries.forEach((dfn, index) => {
+    let oldentry = oldentries.find(d => d[key] === dfn[key]);
+    if (!oldentry) {
+      if (isHash) {
+        results.push('+ ' + dfn[key] + ': {…},');
+      } else {
+        results.push('+ {"' + key + '": "' + dfn[key] + '"…},');
+      }
+      return;
+    }
   });
   return results;
 }
