@@ -22,8 +22,9 @@ list2.json:
  {"id": "user3", "name": "Carol", "age": 25}
 ]
 ```
+
 ```sh
-node jsodiff.js -k id list1.json list2.sjon
+node jsodiff.js -k id list1.json list2.json
 ```
 will output
 ```diff
@@ -36,30 +37,32 @@ will output
 + {"id": "user3"…},
 ```
 
+
 Given the two following JSON files with associative arrays of JSON objects:
 
 hash1.json:
 ```json
 {
- "user1": {"name": "Alice", "age": 42},
- "user2": {"name": "Bob", "age": 12}
+  "user1": { "name": "Alice", "age": 42},
+  "user2": { "name": "Bob", "age": 12}
 }
 ```
 
 hash2.json:
 ```json
 {
- "user1": {"name": "Alice", "age": 42},
- "user2" :{"name": "Eve", "age": 16},
- "user3": {"name": "Carol", "age": 25}
+  "user1": { "name": "Alice", "age": 42},
+  "user3": { "name": "Carol", "age": 25},
+  "user2": { "name": "Eve", "age": 16}
 }
 ```
+
 ```sh
-node jsodiff.js hash1.json hash2.sjon
+node jsodiff.js hash1.json hash2.json
 ```
 will output
 ```diff
-"user2": {
+  "user2": {
 -  "name": "Bob",
 +  "name": "Eve",
 -  "age": "12",
@@ -68,28 +71,41 @@ will output
 + "user3": {…},
 ```
 
+
 ## Command line options
+```sh
+node jsodiff.js --help
+```
 ```
 jsodiff.js <base> <new>
+
+Runs a JSON Object diff between files <base> and <new>
+
+Commands:
+  jsodiff.js diff <base> <new>  Runs a JSON Object diff between files <base> and
+                                <new>                                  [default]
 
 Positionals:
   base  base file of the comparison                          [string] [required]
   new   target file of the comparison                        [string] [required]
 
 Options:
-  --help            Show help                                          [boolean]
-  --version         Show version number                                [boolean]
-  -p, --path        jq-path of the object to be compared in the global JSON file
-  -k, --key         name of the key to use as index for an array of objects
-  -i, --ignore-field  ignore diffs when they occur in the given field of the objects being compared
+  --help              Show help                                        [boolean]
+  --version           Show version number                              [boolean]
+  -p, --path          jq-path of the object to be compared in the global JSON
+                      file
+  -k, --key           name of the key to use as index for an array of objects
+  -i, --ignore-field  ignore diffs when they occur in the given field of the
+                      objects being compared
 ```
+
 
 ## Advanced examples
 
 ### --ignore-field
 The `--ignore-field` option allows to indicate one (or more by repeating the option) set of fields in the list of objects that should be ignored when comparing one list with another.
 
-list1.json:
+ignore-field1.json:
 ```json
 [
  {"id": "user1", "name": "Alice", "age": 42},
@@ -97,17 +113,17 @@ list1.json:
 ]
 ```
 
-list2.json:
+ignore-field2.json:
 ```json
 [
  {"id": "user1", "name": "Alice", "age": 42},
- {"id": "user2", "name": "Eve", "age": 16}
+ {"id": "user2", "name": "Eve", "age": 16},
+ {"id": "user3", "name": "Carol", "age": 25}
 ]
 ```
+
 ```sh
-node jsodiff.js -k id -i age list1.json list2.sjon
-```
-will output
+node jsodiff.js -k id -i age ignore-field1.json ignore-field2.json
 ```
 will output
 ```diff
@@ -115,7 +131,9 @@ will output
 -  "name": "Bob",
 +  "name": "Eve",
   },
++ {"id": "user3"…},
 ```
+
 (ignoring that the `age` field is different in the two `user2` records)
 
 
@@ -123,7 +141,7 @@ will output
 
 The `--path` option allows to only compare a subtree of a JSON file by specifying the path using the syntax of [jq](https://stedolan.github.io/jq/manual/).
 
-list1.json:
+path1.json:
 ```json
 {
  "title": "My data file",
@@ -136,7 +154,7 @@ list1.json:
 }
 ```
 
-list2.json:
+path2.json:
 ```json
 {
  "title": "My data file",
@@ -148,8 +166,9 @@ list2.json:
   }
 }
 ```
+
 ```sh
-node jsodiff.js -k id -p ".data.users" list1.json list2.sjon
+node jsodiff.js -k id -p '.data.users' path1.json path2.json
 ```
 will output
 ```diff
@@ -158,4 +177,6 @@ will output
 +  "name": "Eve",
   },
 ```
+
 (looking only at the array of objects in the "users" field of the "data" field of the top-level object)
+
