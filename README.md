@@ -31,8 +31,8 @@ will output
   {"id": "user2",
 -  "name": "Bob",
 +  "name": "Eve",
--  "age": "12",
-+  "age": "16",
+-  "age": 12,
++  "age": 16,
   },
 + {"id": "user3"…},
 ```
@@ -65,8 +65,8 @@ will output
   "user2": {
 -  "name": "Bob",
 +  "name": "Eve",
--  "age": "12",
-+  "age": "16",
+-  "age": 12,
++  "age": 16,
   },
 + "user3": {…},
 ```

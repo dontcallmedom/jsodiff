@@ -52,8 +52,9 @@ function diffEntries(oldentry, newentry, {isHash: isHash, key: key, ignoreKeys: 
   // we assume keys are the same
   let res = "";
   Object.keys(oldentry).forEach(k => {
-    if (!Array.isArray(oldentry[k]) && oldentry[k] !== newentry[k] && !ignoreKeys.includes(k)) {
-      res += `-  "${k}": "${oldentry[k]}",\n` + `+  "${k}": "${newentry[k]}",\n`;
+    if (typeof oldentry[k] !== 'object' && oldentry[k] !== newentry[k] && !ignoreKeys.includes(k)) {
+      const quote = typeof oldentry[k] === 'number' ? '': '"';
+      res += `-  "${k}": ${quote}${oldentry[k]}${quote},\n` + `+  "${k}": ${quote}${newentry[k]}${quote},\n`;
     } else if (Array.isArray(oldentry[k])) {
       const diffarray = oldentry[k].filter(s => !newentry[k].includes(s)).map(s => '-       "' + s + '"')
             .concat(
@@ -62,7 +63,7 @@ function diffEntries(oldentry, newentry, {isHash: isHash, key: key, ignoreKeys: 
       if (diffarray.length) {
         res += `    "${k}": [\n` + diffarray.join("\n") + "\n     ],\n";
       }
-    }
+    } // TODO deals with objects
   });
   if (res.length) {
     let line;
