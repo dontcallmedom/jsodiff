@@ -3,6 +3,51 @@ const jq = require("node-jq");
 
 const arrayify = a => Array.isArray(a) ? a : (a !== undefined ? [a] : []);
 
+// from https://stackoverflow.com/questions/42817212/merge-two-sorted-arrays-into-one
+function mergeSortedArrays(x, y) {
+    let i = 0;
+    let j = 0;
+    const result = [];
+
+    while (i < x.length && j < y.length) {
+        // Skip negative numbers
+        if (x[i] === -1) {
+            x += 1;
+            continue;
+        }
+        if (y[j] === -1) {
+            y += 1;
+            continue;
+        }
+
+        // Take the smaller of the two values, and add it to the output.
+        // Note: the index (i or j) is only incremented when we use the corresponding value
+        if (x[i] <= y[j]) {
+            result.push(x[i]);
+            i += 1;
+        } else {
+            result.push(y[j]);
+            j += 1;
+        }
+    }
+
+    // At this point, we have reached the end of one of the two arrays. The remainder of
+    // the other array is all larger than what is currently in the output array
+
+    while (i < x.length) {
+        result.push(x[i]);
+        i += 1;
+    }
+
+    while (j < y.length) {
+        result.push(y[j]);
+        j += 1;
+    }
+
+    return result;
+}
+
+
 function diffEntries(oldentry, newentry, {isHash: isHash, key: key, ignoreKeys: ignoreKeys} = {isHash: false, key: '', ignoreKeys: []}) {
   // we assume keys are the same
   let res = "";
@@ -40,33 +85,33 @@ function jsodiff(oldentries, newentries, key, isHash, ignoreKeys = []) {
   let prevDiff = false;
   const additions = [];
 
-  oldentries.forEach((dfn, index) => {
-    let newentry = newentries.find(d => d[key] === dfn[key]);
-    if (!newentry) {
-      if (isHash) {
-        results.push('- "' + dfn[key] + '": {…},');
+  const keys = [...new Set(mergeSortedArrays(oldentries.map(d => d[key]).sort(),
+                                 newentries.map(d => d[key]).sort()
+                                            ))];
+
+  keys.forEach((keyval, index) => {
+    let oldentry = oldentries.find(d => d[key] === keyval);
+    let newentry = newentries.find(d => d[key] === keyval);
+    if (!newentry || !oldentry) {
+      let line = "";
+      if (!oldentry) {
+        line += "+ ";
       } else {
-        results.push('- {"' + key + '": "' + dfn[key] + '"…},');
+        line += "- ";
+      }
+      if (isHash) {
+        results.push(line + '"' + keyval + '": {…},');
+      } else {
+        results.push(line + '{"' + key + '": "' + keyval + '"…},');
       }
       return;
     }
-    let diffentry = diffEntries(dfn, newentry, {ignoreKeys, key, isHash});
+    let diffentry = diffEntries(oldentry, newentry, {ignoreKeys, key, isHash});
     if (diffentry) { // change
       results.push(diffentry);
       prevDiff = true;
     } else if (prevDiff) { // punctuate removal
-      results.push('  {"id": "' + dfn[key] + '"…},');
-    }
-  });
-  newentries.forEach((dfn, index) => {
-    let oldentry = oldentries.find(d => d[key] === dfn[key]);
-    if (!oldentry) {
-      if (isHash) {
-        results.push('+ "' + dfn[key] + '": {…},');
-      } else {
-        results.push('+ {"' + key + '": "' + dfn[key] + '"…},');
-      }
-      return;
+      results.push('  {"id": "' + keyval + '"…},');
     }
   });
   return results;
@@ -81,7 +126,6 @@ async function cli() {
         .describe('k', 'name of the key to use as index for an array of objects')
         .alias('i', 'ignore-field')
         .describe('i', 'ignore diffs when they occur in the given field of the objects being compared')
-  //.array('i')
         .command(['diff <base> <new>', '$0'], 'Runs a JSON Object diff between files <base> and <new>', yargs => {
           yargs.positional('base', {
             describe: 'base file of the comparison',
