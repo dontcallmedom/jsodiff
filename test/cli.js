@@ -3,6 +3,8 @@ const exec   = require('child_process').exec;
 const fs = require("fs");
 
 const tests = [
+  {title: "has complete documentation",
+   dir: "help"},
   {title: "runs the diff on lists with explicit key",
    dir: "list"},
   {title: "runs the diff on a hash",
@@ -21,7 +23,7 @@ describe("Testing the command line interface", () => {
         if (errFile) return done(errFile);
         fs.readFile(dir + 'options', 'utf-8', (errFile, options) => {
           // we ignore errors since options is optional :)
-          const command = 'node jsodiff ' + (options ? options + " " : "" ) + dir + '/file1.json ' + dir + '/file2.json';
+          const command = 'LANG=en node jsodiff.js ' + (options ? options + " " : "" ) + (fs.existsSync(dir + '/file1.json') ? dir + '/file1.json ' + dir + '/file2.json' : '');
           exec(command, 'utf-8', (err, stdout, stderr) => {
             if (err) return done(err);
             assert.equal(out, stdout);

@@ -1,0 +1,20 @@
+jsodiff.js <base> <new>
+
+Runs a JSON Object diff between files <base> and <new>
+
+Commands:
+  jsodiff.js diff <base> <new>  Runs a JSON Object diff between files <base> and
+                                <new>                                  [default]
+
+Positionals:
+  base  base file of the comparison                          [string] [required]
+  new   target file of the comparison                        [string] [required]
+
+Options:
+  --help              Show help                                        [boolean]
+  --version           Show version number                              [boolean]
+  -p, --path          jq-path of the object to be compared in the global JSON
+                      file
+  -k, --key           name of the key to use as index for an array of objects
+  -i, --ignore-field  ignore diffs when they occur in the given field of the
+                      objects being compared

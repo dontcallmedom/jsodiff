@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
+    "hercule": "^5.0.0",
     "mocha": "^8.0.1"
   }
 }
