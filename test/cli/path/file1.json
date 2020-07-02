@@ -1,0 +1,9 @@
+{
+ "title": "My data file",
+ "data": {
+  "users": [
+    {"id": "user1", "name": "Alice", "age": 42},
+    {"id": "user2", "name": "Bob", "age": 12}
+   ]
+  }
+}
