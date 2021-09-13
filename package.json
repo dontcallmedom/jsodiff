@@ -9,7 +9,7 @@
   "author": "Dominique Hazael-Massieux <dom@w3.org> (http://www.w3.org/People/Dom/)",
   "license": "MIT",
   "dependencies": {
-    "node-jq": "^1.11.1",
+    "node-jq": "^2.0.0",
     "yargs": "^15.3.1"
   },
   "devDependencies": {
